@@ -103,24 +103,29 @@ export default function Path() {
         <div className="w-full lg:w-[320px] space-y-4">
           <div className="bg-[#16181d] rounded-xl border border-[#272b35] p-5">
             <h3 className="text-[#0ea5e9] font-medium text-sm flex items-center gap-2 mb-3">
-              <Circle className="w-4 h-4 fill-current" /> Why was my path changed?
+              <Circle className="w-4 h-4 fill-current" /> Your Current Focus
             </h3>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Your <strong className="text-white">Functions</strong> mastery dropped to 48%, so Recursion was temporarily moved down and Functions practice was added first.
+              The adaptive engine has set your current focus to <strong className="text-white">{currentConcept?.name}</strong>. 
+              {currentConcept && Math.round(currentConcept.p_mastery * 100) > 30 ? (
+                <span> You are currently at {Math.round(currentConcept.p_mastery * 100)}% mastery. Keep practicing to reach 70%!</span>
+              ) : (
+                <span> You have successfully mastered all prerequisites and are ready to tackle this new topic.</span>
+              )}
             </p>
           </div>
           
           <div className="bg-[#16181d] rounded-xl border border-[#272b35] p-5">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">Recommended Next</p>
-            <h3 className="text-white font-medium mb-3">Practice Functions</h3>
+            <h3 className="text-white font-medium mb-3">Practice {currentConcept?.name}</h3>
             <p className="text-xs text-gray-400 mb-5">
-              Functions (48%) is the weakest prerequisite of your current concept, Recursion.
+              Take a quiz or practice session to increase your mastery in {currentConcept?.name}.
             </p>
             <button 
-              onClick={() => navigate('/diagnostic')}
+              onClick={() => navigate(`/quiz/${currentConcept?.concept_id}`)}
               className="w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
             >
-              Practice Functions <ArrowRight className="w-4 h-4" />
+              Practice {currentConcept?.name} <ArrowRight className="w-4 h-4" />
             </button>
           </div>
           
