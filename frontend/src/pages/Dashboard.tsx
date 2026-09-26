@@ -2,19 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import type { MasteryRecord } from "../types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
+import { Brain, ArrowRight, Zap, CheckCircle2, ChevronRight, Lock, AlertTriangle, PenTool } from "lucide-react";
 import { Progress } from "../components/ui/progress";
-import { Brain, ArrowRight, TrendingUp } from "lucide-react";
-import {
-  Radar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
 
 export default function Dashboard() {
   const [mastery, setMastery] = useState<MasteryRecord[]>([]);
@@ -38,8 +27,6 @@ export default function Dashboard() {
       }
     };
     loadData();
-    
-    // Polling interval for live updates per MVP requirements
     const interval = setInterval(loadData, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -48,100 +35,176 @@ export default function Dashboard() {
     return (
       <div className="flex h-[50vh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Brain className="h-8 w-8 animate-pulse text-primary" />
-          <p className="text-sm text-muted-foreground animate-pulse">Loading neural profile...</p>
+          <Brain className="h-8 w-8 animate-pulse text-blue-500" />
+          <p className="text-sm text-gray-400 animate-pulse">Loading neural profile...</p>
         </div>
       </div>
     );
   }
 
-  // Format data for radar chart (value scaled to 100 for better visuals)
-  const chartData = mastery.map(m => ({
-    subject: m.name || m.concept_id,
-    A: Math.round(m.p_mastery * 100),
-    fullMark: 100,
-  }));
-
-  const recommendedConcept = path.find(c => c.recommended) || path[0];
+  const currentConcept = path.find(c => c.recommended) || path[0] || { name: "Functions", p_mastery: 0.31 };
+  
+  // Fake gap detection for demonstration based on screenshot
+  const gapConcept = "Functions";
+  const targetConcept = "Recursion";
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Your Neural Profile</h1>
-          <p className="text-muted-foreground mt-1">Live mastery tracking across all Python concepts.</p>
-        </div>
-        {recommendedConcept && (
-          <Button onClick={() => navigate(`/quiz/${recommendedConcept.concept_id}`)} size="lg" className="gap-2 shadow-lg hover:shadow-primary/25 transition-all">
-            Continue Learning <ArrowRight className="h-4 w-4" />
-          </Button>
-        )}
+    <div className="space-y-6 animate-in fade-in duration-500 max-w-5xl">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-white mb-1">Welcome back.</h1>
+        <p className="text-gray-400 text-sm">Continue your learning journey.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-1 shadow-md bg-card/50 backdrop-blur border-primary/10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Mastery Radar
-            </CardTitle>
-            <CardDescription>Visual representation of your current skill levels.</CardDescription>
-          </CardHeader>
-          <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
-                <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: 'currentColor', fontSize: 12 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '8px' }}
-                  itemStyle={{ color: 'hsl(var(--foreground))' }}
-                />
-                <Radar name="Mastery" dataKey="A" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.4} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="lg:col-span-2 shadow-md bg-card/50 backdrop-blur">
-          <CardHeader>
-            <CardTitle>Recommended Path</CardTitle>
-            <CardDescription>Topologically sorted learning path based on prerequisite mastery.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {path.map((concept, idx) => (
-                <div key={concept.concept_id} className="group relative">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${
-                        concept.recommended 
-                          ? "border-primary bg-primary/20 text-primary animate-pulse" 
-                          : "border-muted bg-muted/50 text-muted-foreground"
-                      }`}>
-                        {idx + 1}
-                      </div>
-                      <div>
-                        <span className="font-semibold block">{concept.name || concept.concept_id}</span>
-                        {concept.recommended && <span className="text-xs text-primary font-medium">Currently active</span>}
-                      </div>
-                    </div>
-                    <span className="text-sm font-medium">
-                      {Math.round(concept.p_mastery * 100)}%
-                    </span>
-                  </div>
-                  <Progress 
-                    value={concept.p_mastery * 100} 
-                    className={`h-2 transition-all ${concept.recommended ? 'bg-primary/20' : ''}`}
-                  />
-                  {idx < path.length - 1 && (
-                    <div className="absolute left-4 top-8 h-full w-px bg-border -z-10" />
-                  )}
-                </div>
-              ))}
+      {/* Top Banner */}
+      <div className="bg-[#16181d] rounded-xl border border-[#272b35] p-6 flex items-center justify-between shadow-lg">
+        <div className="flex items-center gap-6">
+          <div className="relative w-16 h-16 flex items-center justify-center">
+            {/* SVG Circle for 31% progress */}
+            <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#272b35" strokeWidth="8" />
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#f59e0b" strokeWidth="8" strokeDasharray="283" strokeDashoffset={283 - (283 * 0.31)} strokeLinecap="round" />
+            </svg>
+            <span className="absolute text-sm font-bold text-white">31%</span>
+          </div>
+          
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">Current Concept</p>
+            <h2 className="text-xl font-bold text-white mb-2">Understanding {currentConcept.name || targetConcept}</h2>
+            <div className="flex items-center gap-4 text-xs font-medium">
+              <span className="flex items-center gap-1 text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                <AlertTriangle className="w-3 h-3" /> Needs practice
+              </span>
+              <span className="text-gray-400">Prerequisite: {gapConcept}</span>
+              <span className="text-gray-400">~45 min left</span>
             </div>
-          </CardContent>
-        </Card>
+            <div className="mt-4 flex items-center gap-2">
+              <span className="text-xs text-gray-500">Lesson 2 of 6</span>
+              <div className="w-32 h-1.5 bg-[#272b35] rounded-full overflow-hidden">
+                <div className="h-full bg-blue-500 w-1/3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button 
+          onClick={() => navigate(`/quiz/${currentConcept.concept_id}`)}
+          className="bg-[#0ea5e9] hover:bg-[#0284c7] text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm shadow-lg shadow-[#0ea5e9]/20"
+        >
+          Continue Learning <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Knowledge Profile */}
+        <div className="bg-[#16181d] rounded-xl border border-[#272b35] p-6">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">Knowledge Profile</p>
+              <h3 className="text-white font-medium">Concept mastery</h3>
+            </div>
+            <button className="text-xs text-gray-400 hover:text-white transition-colors">Details &rarr;</button>
+          </div>
+          
+          <div className="space-y-6">
+            {mastery.slice(0, 4).map((m, i) => {
+              const val = Math.round(m.p_mastery * 100);
+              const color = val > 75 ? "bg-emerald-500" : val > 40 ? "bg-amber-500" : "bg-red-500";
+              return (
+                <div key={m.concept_id}>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-gray-200">{m.name || m.concept_id}</span>
+                    <span className="text-gray-400">{val}%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-[#272b35] rounded-full overflow-hidden">
+                    <div className={`h-full ${color}`} style={{ width: `${val}%` }}></div>
+                  </div>
+                </div>
+              );
+            })}
+            
+            <div className="pt-2 border-t border-[#272b35] flex items-center justify-between text-gray-500">
+              <span className="text-sm">Trees</span>
+              <Lock className="w-4 h-4" />
+            </div>
+          </div>
+        </div>
+
+        {/* Knowledge Gap */}
+        <div className="bg-[#16181d] rounded-xl border border-amber-500/20 p-6 shadow-[0_0_15px_rgba(245,158,11,0.05)] relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+          
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">Knowledge Gap</p>
+          <h3 className="text-amber-500 font-medium flex items-center gap-2 mb-6">
+            <Zap className="w-4 h-4" fill="currentColor" /> Blocking your progress
+          </h3>
+          
+          <p className="text-sm text-gray-300 mb-4">
+            <strong className="text-amber-500 font-medium">{gapConcept}</strong> is currently blocking your progress in {targetConcept}.
+          </p>
+          
+          <div className="bg-[#0f1115] border border-[#272b35] rounded-lg p-4 mb-4">
+            <p className="text-[10px] uppercase text-gray-500 font-semibold tracking-wider mb-2">Reason</p>
+            <p className="text-xs text-gray-400">
+              Recursion depends on understanding function calls and return values.
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-4 mb-6 text-xs font-medium">
+            <span className="text-amber-500 border border-amber-500/30 bg-amber-500/5 px-2 py-1 rounded">Functions 48%</span>
+            <span className="text-gray-500">&rarr;</span>
+            <span className="text-gray-400 bg-[#272b35] px-2 py-1 rounded">Recursion 31%</span>
+          </div>
+          
+          <button className="w-full bg-[#272b35] hover:bg-[#333845] text-white py-2.5 rounded-lg text-sm font-medium transition-colors border border-[#3a3f4e]">
+            Review {gapConcept}
+          </button>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-[#16181d] rounded-xl border border-[#272b35] p-6">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">Recent Activity</p>
+        <h3 className="text-white font-medium mb-6">What changed recently</h3>
+        
+        <div className="space-y-6">
+          <div className="flex gap-4">
+            <div className="mt-0.5 bg-amber-500/10 p-1.5 rounded text-amber-500 border border-amber-500/20">
+              <Zap className="w-4 h-4" fill="currentColor" />
+            </div>
+            <div className="flex-1">
+              <div className="flex justify-between">
+                <p className="text-sm font-medium text-gray-200">Knowledge gap detected</p>
+                <span className="text-xs text-gray-500">12 min ago</span>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Functions flagged as a prerequisite for Recursion</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-4">
+            <div className="mt-0.5 bg-gray-800 p-1.5 rounded text-gray-400 border border-gray-700">
+              <PenTool className="w-4 h-4" />
+            </div>
+            <div className="flex-1">
+              <div className="flex justify-between">
+                <p className="text-sm font-medium text-gray-200">Adaptive quiz - Recursion</p>
+                <span className="text-xs text-gray-500">40 min ago</span>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">3 of 3 correct - difficulty raised to Medium</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-4">
+            <div className="mt-0.5 bg-emerald-500/10 p-1.5 rounded text-emerald-500 border border-emerald-500/20">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+            <div className="flex-1">
+              <div className="flex justify-between">
+                <p className="text-sm font-medium text-gray-200">Lesson completed</p>
+                <span className="text-xs text-gray-500">1 h ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

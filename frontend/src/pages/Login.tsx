@@ -28,7 +28,9 @@ export default function Login() {
     toast.success("Welcome back!", {
       icon: <Brain className="h-4 w-4 text-primary" />
     });
-    navigate("/dashboard");
+    // Set token for api.ts
+    localStorage.setItem("token", "student-1");
+    navigate("/onboarding");
   };
 
   return (
