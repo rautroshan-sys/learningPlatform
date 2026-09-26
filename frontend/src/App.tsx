@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import Dashboard from "./pages/Dashboard";
 import Quiz from "./pages/Quiz";
 import Diagnostic from "./pages/Diagnostic";
+import Login from "./pages/Login";
 import MainLayout from "./layouts/MainLayout";
 
 function App() {
@@ -10,8 +11,9 @@ function App() {
     <Router>
       <Toaster position="top-right" richColors />
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route index element={<Navigate to="/login" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="diagnostic" element={<Diagnostic />} />
           <Route path="quiz/:conceptId" element={<Quiz />} />
